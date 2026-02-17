@@ -5,19 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neils Barber</title>
+    <!-- Fuentes Premium -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Motor de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              cinzel: ['Cinzel', 'serif'],
+              inter: ['Inter', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+          .font-cinzel { font-family: 'Cinzel', serif; }
+          .gold-text { 
+            color: #E2E8F0; 
+            text-shadow: 0 0 12px rgba(226, 232, 240, 0.4); 
+          }
+          .gold-gradient { 
+            background: linear-gradient(135deg, #94A3B8, #F8FAFC, #CBD5E1, #F1F5F9, #64748B); 
+          }
+          .no-scrollbar::-webkit-scrollbar { 
+            display: none; 
+          }
+        }
+    </style>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
             background-color: #000;
             color: #fff;
             margin: 0;
             overflow-x: hidden;
         }
-        .font-cinzel { font-family: 'Cinzel', serif; }
-        .gold-text { color: #E2E8F0; text-shadow: 0 0 8px rgba(226, 232, 240, 0.4); }
-        .gold-gradient { background: linear-gradient(135deg, #94A3B8, #F8FAFC, #CBD5E1, #F1F5F9, #64748B); }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 <script type="importmap">
 {
