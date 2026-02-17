@@ -20,6 +20,7 @@ export const SupabaseService = {
     try {
       const { data, error } = await supabase.from('config').select('*').single();
       if (error) throw error;
+      // Mapeamos de snake_case (DB) a camelCase (TS)
       return {
         name: data.name,
         logo: data.logo,
@@ -34,6 +35,7 @@ export const SupabaseService = {
   },
 
   async updateConfig(config: ShopConfig) {
+    // Mapeamos de camelCase (TS) a snake_case (DB)
     const { error } = await supabase
       .from('config')
       .update({
