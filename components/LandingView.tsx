@@ -33,7 +33,7 @@ const LandingView: React.FC<LandingViewProps> = ({ config, onEnter }) => {
       </h1>
       
       <p className="text-gray-500 font-light tracking-[0.5em] uppercase mb-12 text-sm md:text-base">
-        Estilo • Precisión • Cromo
+        Reserva tu Cita
       </p>
 
       <button 
