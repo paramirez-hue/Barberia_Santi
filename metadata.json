@@ -1,0 +1,7 @@
+{
+  "name": "Neils Barber - Gestión de Citas",
+  "description": "Una aplicación premium para la gestión de citas de barbería con estética elegante en negro y dorado, sistema de reservas con validaciones inteligentes y panel de administración.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
