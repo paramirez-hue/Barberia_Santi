@@ -42,6 +42,20 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
+  // Inyección de variables CSS dinámicas
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--color-primary', config.themeColors.primary);
+    root.style.setProperty('--color-secondary', config.themeColors.secondary);
+    root.style.setProperty('--color-accent', config.themeColors.accent);
+    root.style.setProperty('--color-accent-rgb', hexToRgb(config.themeColors.accent));
+  }, [config.themeColors]);
+
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '226, 232, 240';
+  };
+
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
@@ -50,7 +64,7 @@ const App: React.FC = () => {
   const handleBookingComplete = async (newAppointment: Appointment) => {
     try {
       await SupabaseService.saveAppointment(newAppointment);
-      await fetchData(); // Refrescar citas
+      await fetchData(); 
       showNotification("¡Cita agendada con éxito!", 'success');
       setView('services');
     } catch (err) {
@@ -100,8 +114,8 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-12 h-12 text-[#E2E8F0] animate-spin" />
-        <p className="font-cinzel text-[#E2E8F0] tracking-widest animate-pulse">Sincronizando con Supabase...</p>
+        <Loader2 className="w-12 h-12 text-white animate-spin" />
+        <p className="font-cinzel text-white tracking-widest animate-pulse">Sincronizando con Supabase...</p>
       </div>
     );
   }
@@ -149,32 +163,56 @@ const App: React.FC = () => {
     }
   };
 
-  if (view === 'landing') return renderView();
+  const dynamicStyles = `
+    :root {
+      --color-primary: ${config.themeColors.primary};
+      --color-secondary: ${config.themeColors.secondary};
+      --color-accent: ${config.themeColors.accent};
+    }
+    body { background-color: var(--color-primary); }
+    .bg-theme-primary { background-color: var(--color-primary); }
+    .bg-theme-secondary { background-color: var(--color-secondary); }
+    .text-theme-accent { color: var(--color-accent); }
+    .border-theme-accent { border-color: var(--color-accent); }
+    .gold-gradient { 
+      background: linear-gradient(135deg, var(--color-accent), #ffffff, var(--color-accent)); 
+    }
+    .gold-text { 
+      color: var(--color-accent); 
+      text-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.4); 
+    }
+  `;
 
   return (
-    <div className="min-h-screen bg-black text-white relative flex overflow-hidden">
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        setIsOpen={setIsSidebarOpen} 
-        currentView={view}
-        setView={setView}
-        config={config}
-      />
+    <div className="min-h-screen text-white relative flex overflow-hidden font-inter" style={{ backgroundColor: 'var(--color-primary)' }}>
+      <style>{dynamicStyles}</style>
+      
+      {view !== 'landing' && (
+        <Sidebar 
+          isOpen={isSidebarOpen} 
+          setIsOpen={setIsSidebarOpen} 
+          currentView={view}
+          setView={setView}
+          config={config}
+        />
+      )}
 
       <main className="flex-1 overflow-y-auto h-screen relative">
-        <header className="sticky top-0 z-30 bg-black/80 backdrop-blur-md border-b border-white/10 p-4 flex justify-between items-center px-6">
-          <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
-            <Menu className="w-6 h-6 text-[#E2E8F0]" />
-          </button>
-          
-          <h1 className="font-cinzel text-xl text-[#E2E8F0] font-bold tracking-widest uppercase text-center flex-1">
-            {config.name}
-          </h1>
+        {view !== 'landing' && (
+          <header className="sticky top-0 z-30 backdrop-blur-md border-b border-white/10 p-4 flex justify-between items-center px-6" style={{ backgroundColor: 'rgba(var(--color-primary-rgb, 0,0,0), 0.8)' }}>
+            <button onClick={() => setIsSidebarOpen(true)} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+              <Menu className="w-6 h-6 text-theme-accent" />
+            </button>
+            
+            <h1 className="font-cinzel text-xl text-theme-accent font-bold tracking-widest uppercase text-center flex-1">
+              {config.name}
+            </h1>
 
-          <div className="w-10"></div>
-        </header>
+            <div className="w-10"></div>
+          </header>
+        )}
 
-        <div className="pb-20">
+        <div className={view === 'landing' ? '' : 'pb-20'}>
           {renderView()}
         </div>
 
@@ -182,7 +220,7 @@ const App: React.FC = () => {
           <div className={`fixed bottom-8 right-8 z-50 px-6 py-3 rounded-lg shadow-2xl flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 border ${
             notification.type === 'success' ? 'bg-zinc-800 border-zinc-600' : 'bg-red-900/90 border-red-500'
           }`}>
-            <Bell className="w-5 h-5 text-[#E2E8F0]" />
+            <Bell className="w-5 h-5 text-theme-accent" />
             <span className="font-medium">{notification.message}</span>
           </div>
         )}

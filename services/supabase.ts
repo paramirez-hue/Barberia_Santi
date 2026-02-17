@@ -20,7 +20,12 @@ export const SupabaseService = {
         logo: data.logo,
         openingTime: data.opening_time,
         closingTime: data.closing_time,
-        workingDays: data.working_days
+        workingDays: data.working_days,
+        themeColors: data.theme_colors || {
+          primary: "#000000",
+          secondary: "#18181b",
+          accent: "#E2E8F0"
+        }
       };
     } catch (error) {
       console.error('Error fetching config:', error);
@@ -36,7 +41,8 @@ export const SupabaseService = {
         logo: config.logo,
         opening_time: config.openingTime,
         closing_time: config.closingTime,
-        working_days: config.workingDays
+        working_days: config.workingDays,
+        theme_colors: config.themeColors
       })
       .eq('id', 1);
     if (error) throw error;
@@ -55,7 +61,8 @@ export const SupabaseService = {
         price: Number(s.price),
         description: s.description || '',
         durationMinutes: s.duration_minutes || 30,
-        category: s.category || 'General'
+        category: s.category || 'General',
+        iconName: s.icon_name || 'Scissors'
       }));
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -70,7 +77,8 @@ export const SupabaseService = {
       price: service.price,
       description: service.description,
       duration_minutes: service.durationMinutes,
-      category: service.category
+      category: service.category,
+      icon_name: service.iconName
     });
     if (error) throw error;
   },

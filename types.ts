@@ -6,6 +6,7 @@ export interface Service {
   description: string;
   durationMinutes: number;
   category: string;
+  iconName?: string;
 }
 
 export interface Appointment {
@@ -25,6 +26,11 @@ export interface ShopConfig {
   openingTime: string; // HH:mm
   closingTime: string; // HH:mm
   workingDays: number[]; // 0-6 (Sun-Sat)
+  themeColors: {
+    primary: string;   // Fondo
+    secondary: string; // Superficies
+    accent: string;    // Destacados/Botones
+  };
 }
 
 export type ViewState = 'landing' | 'services' | 'booking' | 'admin' | 'my-appointments';
