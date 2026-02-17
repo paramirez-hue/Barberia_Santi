@@ -53,6 +53,28 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
     }
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalConfig({ ...localConfig, logo: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const toggleDay = (dayId: number) => {
+    const currentDays = [...localConfig.workingDays];
+    const index = currentDays.indexOf(dayId);
+    if (index > -1) {
+      currentDays.splice(index, 1);
+    } else {
+      currentDays.push(dayId);
+    }
+    setLocalConfig({ ...localConfig, workingDays: currentDays.sort() });
+  };
+
   const openServiceModal = (service?: Service) => {
     if (service) {
       setEditingService(service);
@@ -138,8 +160,20 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-zinc-900 p-8 rounded-3xl border border-white/5">
         <div className="flex items-center space-x-6">
-          <h2 className="text-3xl font-cinzel font-bold text-white uppercase tracking-tighter">{localConfig.name}</h2>
-          <span className="text-[10px] bg-green-900/30 text-green-400 border border-green-900/50 px-2 py-0.5 rounded font-bold uppercase">Online</span>
+          <div className="relative group cursor-pointer">
+            {localConfig.logo ? (
+              <img src={localConfig.logo} alt="Logo" className="w-20 h-20 rounded-2xl object-cover border-2 border-[#E2E8F0]" />
+            ) : (
+              <div className="w-20 h-20 bg-zinc-800 rounded-2xl flex items-center justify-center border-2 border-dashed border-zinc-700 group-hover:border-[#E2E8F0] transition-colors">
+                <Camera className="w-8 h-8 text-zinc-600 group-hover:text-[#E2E8F0]" />
+              </div>
+            )}
+            <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 opacity-0 cursor-pointer" title="Cambiar Logo" />
+          </div>
+          <div>
+            <h2 className="text-3xl font-cinzel font-bold text-white uppercase tracking-tighter">{localConfig.name}</h2>
+            <span className="text-[10px] bg-green-900/30 text-green-400 border border-green-900/50 px-2 py-0.5 rounded font-bold uppercase">Online • Supabase</span>
+          </div>
         </div>
         <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2.5 bg-zinc-800 border border-zinc-700 text-gray-400 rounded-xl hover:bg-zinc-700 transition-colors flex items-center space-x-2 text-xs font-bold uppercase tracking-widest">
           <LogOut className="w-4 h-4" />
@@ -153,7 +187,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
           { id: 'appointments', label: 'Agenda', icon: ListChecks },
           { id: 'services', label: 'Servicios', icon: Edit3 },
-          { id: 'settings', label: 'Ajustes', icon: Settings },
+          { id: 'settings', label: 'Configuración', icon: Settings },
         ].map(tab => (
           <button
             key={tab.id}
@@ -231,7 +265,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
         {activeTab === 'services' && (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h3 className="font-cinzel text-xl text-white font-bold uppercase tracking-widest">Listado de Servicios</h3>
+              <h3 className="font-cinzel text-xl text-white font-bold uppercase tracking-widest">Gestión de Servicios</h3>
               <button 
                 onClick={() => openServiceModal()}
                 className="gold-gradient px-6 py-2.5 rounded-xl text-black font-bold uppercase text-[10px] tracking-widest flex items-center space-x-2"
@@ -249,7 +283,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                       <span className="text-[9px] uppercase font-bold text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">{s.category}</span>
                       <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => openServiceModal(s)} className="p-1.5 text-blue-400 hover:bg-blue-400/10 rounded-lg"><Edit3 className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => confirm("Eliminar?") && onDeleteService(s.id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-lg"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => confirm("¿Deseas eliminar este servicio?") && onDeleteService(s.id)} className="p-1.5 text-red-400 hover:bg-red-400/10 rounded-lg"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
                     <h4 className="text-lg font-bold text-white mb-1">{s.name}</h4>
@@ -267,32 +301,99 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
 
         {activeTab === 'settings' && (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl space-y-6">
-                <h3 className="font-cinzel text-lg text-white font-bold border-b border-white/5 pb-4 uppercase tracking-widest">Identidad</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Identidad */}
+              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
+                <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
+                  <Settings className="w-4 h-4 text-[#E2E8F0]" />
+                  <span>Identidad</span>
+                </h3>
                 <div className="space-y-4">
                   <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Nombre del Negocio</label>
-                  <input type="text" value={localConfig.name} onChange={(e) => setLocalConfig({ ...localConfig, name: e.target.value })} className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 text-white outline-none focus:border-[#E2E8F0]" />
+                  <input
+                    type="text"
+                    value={localConfig.name}
+                    onChange={(e) => setLocalConfig({ ...localConfig, name: e.target.value })}
+                    className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-[#E2E8F0] transition-all text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Logo del Negocio</label>
+                  <div className="flex items-center space-x-4 p-4 bg-zinc-800/50 rounded-xl border border-white/5">
+                     {localConfig.logo ? (
+                       <img src={localConfig.logo} className="w-12 h-12 rounded-lg object-cover border border-[#E2E8F0]" alt="Preview" />
+                     ) : (
+                       <div className="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center"><Camera className="w-5 h-5" /></div>
+                     )}
+                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#E2E8F0] file:text-black hover:file:bg-white cursor-pointer" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl space-y-6">
-                <h3 className="font-cinzel text-lg text-white font-bold border-b border-white/5 pb-4 uppercase tracking-widest">Horarios</h3>
+              {/* Horarios */}
+              <div className="bg-zinc-900 border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
+                <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
+                  <Clock className="w-4 h-4 text-[#E2E8F0]" />
+                  <span>Horarios</span>
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Apertura</label>
-                    <input type="time" value={localConfig.openingTime} onChange={(e) => setLocalConfig({ ...localConfig, openingTime: e.target.value })} className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 text-white" />
+                    <input
+                      type="time"
+                      value={localConfig.openingTime}
+                      onChange={(e) => setLocalConfig({ ...localConfig, openingTime: e.target.value })}
+                      className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-[#E2E8F0] transition-all text-white"
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Cierre</label>
-                    <input type="time" value={localConfig.closingTime} onChange={(e) => setLocalConfig({ ...localConfig, closingTime: e.target.value })} className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 text-white" />
+                    <input
+                      type="time"
+                      value={localConfig.closingTime}
+                      onChange={(e) => setLocalConfig({ ...localConfig, closingTime: e.target.value })}
+                      className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-[#E2E8F0] transition-all text-white"
+                    />
                   </div>
                 </div>
               </div>
+
+              {/* Días Laborales */}
+              <div className="md:col-span-2 bg-zinc-900 border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
+                <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
+                  <Calendar className="w-4 h-4 text-[#E2E8F0]" />
+                  <span>Días de Atención</span>
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  {daysOfWeek.map((day) => {
+                    const isActive = localConfig.workingDays.includes(day.id);
+                    return (
+                      <button
+                        key={day.id}
+                        onClick={() => toggleDay(day.id)}
+                        className={`px-6 py-3 rounded-xl border font-bold transition-all uppercase text-[10px] tracking-widest ${
+                          isActive 
+                          ? 'bg-[#E2E8F0] border-[#E2E8F0] text-black shadow-lg scale-105' 
+                          : 'bg-zinc-800/50 border-white/5 text-gray-500 hover:border-[#E2E8F0]/30'
+                        }`}
+                      >
+                        {day.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
+
+            {/* Botón Guardar */}
             <div className="flex justify-end pt-4">
-              <button onClick={handleSaveSettings} disabled={isSaving} className="gold-gradient px-12 py-4 rounded-xl text-black font-bold uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
-                {isSaving ? 'Guardando...' : 'Guardar Ajustes'}
+              <button
+                onClick={handleSaveSettings}
+                disabled={isSaving}
+                className="gold-gradient px-12 py-4 rounded-xl text-black font-bold uppercase tracking-widest shadow-2xl flex items-center space-x-3 hover:scale-105 transition-transform disabled:opacity-50 disabled:scale-100"
+              >
+                {isSaving ? <span className="animate-spin">⌛</span> : <Save className="w-5 h-5" />}
+                <span>{isSaving ? 'Guardando...' : 'Guardar Ajustes Generales'}</span>
               </button>
             </div>
           </div>
