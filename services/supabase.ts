@@ -1,11 +1,11 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { ShopConfig, Appointment, Service } from '../types';
+import { ShopConfig, Appointment } from '../types';
 
-// NOTA: Debes reemplazar estos valores con los de tu proyecto de Supabase
-// o asegurarte de que estén disponibles en las variables de entorno.
-const supabaseUrl = 'https:kjlcoasxlbagtyqqdboy.supabase.co';
-const supabaseAnonKey = 'sb_publishable_19AiyCwbaYHnGPpm3fMz4A_k1hwnO3I';
+// Usamos variables de entorno para mayor seguridad en producción
+// Fixed: Cast import.meta to any to bypass Property 'env' does not exist on type 'ImportMeta'
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL || 'https://default.supabase.co';
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY || '';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -31,7 +31,7 @@ export const SupabaseService = {
       .update({
         name: config.name,
         logo: config.logo,
-        opening_time: config.openingTime,
+        opening_time: config.opening_time,
         closing_time: config.closingTime,
         working_days: config.workingDays
       })

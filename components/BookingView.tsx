@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { Service, ShopConfig, Appointment } from '../types';
-import { format, addDays, isBefore, startOfDay, parse, addHours, isAfter, setHours, setMinutes, isSameDay } from 'date-fns';
+// Fixed: Removed missing exports: startOfDay, parse, setHours, setMinutes
+import { format, addDays, isBefore, addHours, isAfter, isSameDay } from 'date-fns';
 import { Calendar as CalendarIcon, Clock, ChevronLeft, User, Phone, CheckCircle } from 'lucide-react';
 
 interface BookingViewProps {
@@ -38,8 +39,10 @@ const BookingView: React.FC<BookingViewProps> = ({ service, config, existingAppo
     const [openH, openM] = config.openingTime.split(':').map(Number);
     const [closeH, closeM] = config.closingTime.split(':').map(Number);
     
-    let current = setMinutes(setHours(parse(date, 'yyyy-MM-dd', new Date()), openH), openM);
-    const end = setMinutes(setHours(parse(date, 'yyyy-MM-dd', new Date()), closeH), closeM);
+    // Fixed: Using native Date instead of date-fns parse/setHours/setMinutes
+    const [y, mo, dy] = date.split('-').map(Number);
+    let current = new Date(y, mo - 1, dy, openH, openM, 0, 0);
+    const end = new Date(y, mo - 1, dy, closeH, closeM, 0, 0);
 
     const now = new Date();
     const leadTime = addHours(now, 3);
@@ -117,7 +120,9 @@ const BookingView: React.FC<BookingViewProps> = ({ service, config, existingAppo
             <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar">
               {availableDates.map((d) => {
                 const isSelected = date === d;
-                const dateObj = parse(d, 'yyyy-MM-dd', new Date());
+                // Fixed: Using native Date instead of date-fns parse
+                const [year, month, dayOfMonth] = d.split('-').map(Number);
+                const dateObj = new Date(year, month - 1, dayOfMonth);
                 return (
                   <button
                     key={d}

@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neils Barber</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,50 +14,28 @@
             margin: 0;
             overflow-x: hidden;
         }
-        .font-cinzel {
-            font-family: 'Cinzel', serif;
-        }
-        .gold-text {
-            color: #E2E8F0;
-            text-shadow: 0 0 8px rgba(226, 232, 240, 0.4);
-        }
-        .gold-bg {
-            background-color: #CBD5E1;
-        }
-        .gold-border {
-            border-color: #94A3B8;
-        }
-        .gold-gradient {
-            background: linear-gradient(135deg, #94A3B8, #F8FAFC, #CBD5E1, #F1F5F9, #64748B);
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #94A3B8;
-            border-radius: 4px;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .gold-text { color: #E2E8F0; text-shadow: 0 0 8px rgba(226, 232, 240, 0.4); }
+        .gold-gradient { background: linear-gradient(135deg, #94A3B8, #F8FAFC, #CBD5E1, #F1F5F9, #64748B); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.4/",
     "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
     "lucide-react": "https://esm.sh/lucide-react@^0.574.0",
     "date-fns": "https://esm.sh/date-fns@^4.1.0",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.45.4"
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.96.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4"
   }
 }
 </script>
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

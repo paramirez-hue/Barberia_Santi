@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { ShopConfig, Appointment, Service } from '../types';
 import { ADMIN_PASSWORD } from '../constants';
 import { Settings, Calendar, Clock, Lock, Trash2, Camera, LogOut, LayoutDashboard, ListChecks, Scissors } from 'lucide-react';
-import { format, isToday, parseISO } from 'date-fns';
+// Fixed: Removed missing export parseISO
+import { format, isToday } from 'date-fns';
 
 interface AdminViewProps {
   config: ShopConfig;
@@ -43,7 +44,11 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
     }
   };
 
-  const todayAppointments = appointments.filter(a => isToday(parseISO(a.date))).sort((a,b) => a.time.localeCompare(b.time));
+  // Fixed: Using native Date parsing instead of parseISO
+  const todayAppointments = appointments.filter(a => {
+    const [y, m, d] = a.date.split('-').map(Number);
+    return isToday(new Date(y, m - 1, d));
+  }).sort((a,b) => a.time.localeCompare(b.time));
 
   if (!isAuthenticated) {
     return (
