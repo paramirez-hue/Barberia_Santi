@@ -1,14 +1,9 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { ShopConfig, Appointment } from '../types';
+import { ShopConfig, Appointment, Service } from '../types';
 
-// Acceso a variables de entorno con fallback de seguridad
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
 const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn("⚠️ Las variables de entorno de Supabase no están configuradas. Verifica Vercel o tu archivo .env");
-}
 
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co', 
@@ -20,7 +15,6 @@ export const SupabaseService = {
     try {
       const { data, error } = await supabase.from('config').select('*').single();
       if (error) throw error;
-      // Mapeamos de snake_case (DB) a camelCase (TS)
       return {
         name: data.name,
         logo: data.logo,
@@ -29,13 +23,12 @@ export const SupabaseService = {
         workingDays: data.working_days
       };
     } catch (error) {
-      console.error('Error fetching config from Supabase:', error);
+      console.error('Error fetching config:', error);
       return null;
     }
   },
 
   async updateConfig(config: ShopConfig) {
-    // Mapeamos de camelCase (TS) a snake_case (DB)
     const { error } = await supabase
       .from('config')
       .update({
@@ -46,6 +39,44 @@ export const SupabaseService = {
         working_days: config.workingDays
       })
       .eq('id', 1);
+    if (error) throw error;
+  },
+
+  async getServices(): Promise<Service[]> {
+    try {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .order('name', { ascending: true });
+      if (error) throw error;
+      return data.map(s => ({
+        id: s.id,
+        name: s.name,
+        price: Number(s.price),
+        description: s.description || '',
+        durationMinutes: s.duration_minutes || 30,
+        category: s.category || 'General'
+      }));
+    } catch (error) {
+      console.error('Error fetching services:', error);
+      return [];
+    }
+  },
+
+  async saveService(service: Service) {
+    const { error } = await supabase.from('services').upsert({
+      id: service.id,
+      name: service.name,
+      price: service.price,
+      description: service.description,
+      duration_minutes: service.durationMinutes,
+      category: service.category
+    });
+    if (error) throw error;
+  },
+
+  async deleteService(id: string) {
+    const { error } = await supabase.from('services').delete().eq('id', id);
     if (error) throw error;
   },
 
@@ -67,7 +98,7 @@ export const SupabaseService = {
         createdAt: d.created_at
       }));
     } catch (error) {
-      console.error('Error fetching appointments from Supabase:', error);
+      console.error('Error fetching appointments:', error);
       return [];
     }
   },

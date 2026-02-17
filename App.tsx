@@ -1,45 +1,45 @@
 
 import React, { useState, useEffect } from 'react';
 import { ViewState, ShopConfig, Appointment, Service } from './types';
-import { StorageService } from './services/storage'; // Mantenemos como fallback o eliminamos
 import { SupabaseService } from './services/supabase';
-import { Menu, X, Scissors, Calendar, Settings, User, LogOut, ChevronRight, Bell, Trash2, Camera, Loader2 } from 'lucide-react';
+import { Menu, Loader2, Bell } from 'lucide-react';
 
-// Components
 import LandingView from './components/LandingView';
 import ServicesView from './components/ServicesView';
 import BookingView from './components/BookingView';
 import AdminView from './components/AdminView';
 import Sidebar from './components/Sidebar';
-import { DEFAULT_CONFIG, INITIAL_SERVICES } from './constants';
+import { DEFAULT_CONFIG } from './constants';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
   const [config, setConfig] = useState<ShopConfig>(DEFAULT_CONFIG);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [services, setServices] = useState<Service[]>(INITIAL_SERVICES);
+  const [services, setServices] = useState<Service[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carga inicial desde Supabase
+  const fetchData = async () => {
+    try {
+      const [cloudConfig, cloudAppts, cloudServices] = await Promise.all([
+        SupabaseService.getConfig(),
+        SupabaseService.getAppointments(),
+        SupabaseService.getServices()
+      ]);
+      if (cloudConfig) setConfig(cloudConfig);
+      setAppointments(cloudAppts);
+      setServices(cloudServices);
+    } catch (err) {
+      console.error("Error cargando datos:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const initData = async () => {
-      try {
-        const [cloudConfig, cloudAppts] = await Promise.all([
-          SupabaseService.getConfig(),
-          SupabaseService.getAppointments()
-        ]);
-        if (cloudConfig) setConfig(cloudConfig);
-        setAppointments(cloudAppts);
-      } catch (err) {
-        console.error("Error cargando datos de Supabase:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    initData();
+    fetchData();
   }, []);
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
@@ -50,9 +50,7 @@ const App: React.FC = () => {
   const handleBookingComplete = async (newAppointment: Appointment) => {
     try {
       await SupabaseService.saveAppointment(newAppointment);
-      // Actualizamos localmente después de éxito
-      const updatedAppts = await SupabaseService.getAppointments();
-      setAppointments(updatedAppts);
+      await fetchData(); // Refrescar citas
       showNotification("¡Cita agendada con éxito!", 'success');
       setView('services');
     } catch (err) {
@@ -69,10 +67,30 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSaveService = async (service: Service) => {
+    try {
+      await SupabaseService.saveService(service);
+      await fetchData();
+      showNotification("Servicio guardado", 'success');
+    } catch (err) {
+      showNotification("Error al guardar servicio", 'error');
+    }
+  };
+
+  const handleDeleteService = async (id: string) => {
+    try {
+      await SupabaseService.deleteService(id);
+      await fetchData();
+      showNotification("Servicio eliminado", 'success');
+    } catch (err) {
+      showNotification("Error al eliminar servicio", 'error');
+    }
+  };
+
   const handleDeleteAppointment = async (id: string) => {
     try {
       await SupabaseService.deleteAppointment(id);
-      setAppointments(appointments.filter(a => a.id !== id));
+      await fetchData();
       showNotification("Cita eliminada", 'success');
     } catch (err) {
       showNotification("Error eliminando cita", 'error');
@@ -118,6 +136,9 @@ const App: React.FC = () => {
             config={config} 
             setConfig={handleUpdateConfig} 
             appointments={appointments}
+            services={services}
+            onSaveService={handleSaveService}
+            onDeleteService={handleDeleteService}
             onDeleteAppointment={handleDeleteAppointment}
             onExit={() => setView('services')}
             showNotification={showNotification}
@@ -146,7 +167,7 @@ const App: React.FC = () => {
             <Menu className="w-6 h-6 text-[#E2E8F0]" />
           </button>
           
-          <h1 className="font-cinzel text-xl text-[#E2E8F0] font-bold tracking-widest uppercase">
+          <h1 className="font-cinzel text-xl text-[#E2E8F0] font-bold tracking-widest uppercase text-center flex-1">
             {config.name}
           </h1>
 
@@ -158,8 +179,8 @@ const App: React.FC = () => {
         </div>
 
         {notification && (
-          <div className={`fixed bottom-8 right-8 z-50 px-6 py-3 rounded-lg shadow-2xl flex items-center space-x-3 animate-bounce border ${
-            notification.type === 'success' ? 'bg-zinc-700/90 border-zinc-500' : 'bg-red-900/90 border-red-500'
+          <div className={`fixed bottom-8 right-8 z-50 px-6 py-3 rounded-lg shadow-2xl flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 border ${
+            notification.type === 'success' ? 'bg-zinc-800 border-zinc-600' : 'bg-red-900/90 border-red-500'
           }`}>
             <Bell className="w-5 h-5 text-[#E2E8F0]" />
             <span className="font-medium">{notification.message}</span>
