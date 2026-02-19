@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, Scissors, Calendar, Settings, LogOut, Home } from 'lucide-react';
+import { X, Scissors, Calendar, Settings, LogOut, Home, UserCheck } from 'lucide-react';
 import { ViewState, ShopConfig } from '../types';
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, currentView, setView, config }) => {
   const menuItems = [
     { id: 'services', label: 'Servicios', icon: Scissors },
+    { id: 'my-appointments', label: 'Mis Citas', icon: UserCheck },
     { id: 'admin', label: 'Administración', icon: Settings },
   ];
 

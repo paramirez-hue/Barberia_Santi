@@ -64,22 +64,17 @@ export const SupabaseService = {
         iconName: s.icon_name || 'Scissors'
       }));
     } catch (error) {
-      console.error("Error cargando servicios:", error);
       return [];
     }
   },
 
   async saveService(service: Service) {
-    const validPrice = isNaN(Number(service.price)) ? 0 : Number(service.price);
-    const validDuration = isNaN(Number(service.durationMinutes)) ? 30 : Number(service.durationMinutes);
-
-    // Aseguramos que el ID sea siempre string
     const payload = {
       id: String(service.id),
       name: service.name,
-      price: validPrice,
+      price: Number(service.price) || 0,
       description: service.description || '',
-      duration_minutes: validDuration,
+      duration_minutes: Number(service.durationMinutes) || 30,
       category: service.category || 'General',
       icon_name: service.iconName || 'Scissors'
     };
@@ -88,10 +83,7 @@ export const SupabaseService = {
       .from('services')
       .upsert(payload, { onConflict: 'id' });
     
-    if (error) {
-      console.error('Error detallado de Supabase (Upsert):', error);
-      throw error;
-    }
+    if (error) throw error;
   },
 
   async deleteService(id: string) {
@@ -99,11 +91,7 @@ export const SupabaseService = {
       .from('services')
       .delete()
       .eq('id', String(id));
-    
-    if (error) {
-      console.error('Error detallado de Supabase (Delete):', error);
-      throw error;
-    }
+    if (error) throw error;
   },
 
   async getAppointments(): Promise<Appointment[]> {
@@ -126,6 +114,25 @@ export const SupabaseService = {
     } catch (error) {
       return [];
     }
+  },
+
+  async getAppointmentsByPhone(phone: string): Promise<Appointment[]> {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .eq('phone_number', phone)
+      .order('date', { ascending: false });
+    if (error) throw error;
+    return data.map(d => ({
+      id: d.id,
+      serviceId: d.service_id,
+      serviceName: d.service_name,
+      date: d.date,
+      time: d.time,
+      customerName: d.customer_name,
+      phoneNumber: d.phone_number,
+      createdAt: d.created_at
+    }));
   },
 
   async saveAppointment(appt: Appointment) {
