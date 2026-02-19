@@ -14,7 +14,7 @@ export const SupabaseService = {
   async getConfig(): Promise<ShopConfig | null> {
     try {
       const { data, error } = await supabase.from('config').select('*').single();
-      if (error) throw error;
+      if (error) return null;
       return {
         name: data.name,
         logo: data.logo,
@@ -28,7 +28,6 @@ export const SupabaseService = {
         }
       };
     } catch (error) {
-      console.error('Error fetching config:', error);
       return null;
     }
   },
@@ -41,6 +40,7 @@ export const SupabaseService = {
         logo: config.logo,
         opening_time: config.openingTime,
         closing_time: config.closingTime,
+        // Fix: Use config.workingDays instead of config.working_days to match ShopConfig type
         working_days: config.workingDays,
         theme_colors: config.themeColors
       })
@@ -53,10 +53,10 @@ export const SupabaseService = {
       const { data, error } = await supabase
         .from('services')
         .select('*')
-        .order('name', { ascending: true });
+        .order('created_at', { ascending: true });
       if (error) throw error;
       return data.map(s => ({
-        id: s.id,
+        id: s.id.toString(),
         name: s.name,
         price: Number(s.price),
         description: s.description || '',
@@ -65,12 +65,12 @@ export const SupabaseService = {
         iconName: s.icon_name || 'Scissors'
       }));
     } catch (error) {
-      console.error('Error fetching services:', error);
       return [];
     }
   },
 
   async saveService(service: Service) {
+    // Usamos upsert que requiere una Primary Key definida en el SQL para funcionar como UPDATE
     const { error } = await supabase.from('services').upsert({
       id: service.id,
       name: service.name,
@@ -79,7 +79,8 @@ export const SupabaseService = {
       duration_minutes: service.durationMinutes,
       category: service.category,
       icon_name: service.iconName
-    });
+    }, { onConflict: 'id' });
+    
     if (error) throw error;
   },
 
@@ -106,7 +107,6 @@ export const SupabaseService = {
         createdAt: d.created_at
       }));
     } catch (error) {
-      console.error('Error fetching appointments:', error);
       return [];
     }
   },

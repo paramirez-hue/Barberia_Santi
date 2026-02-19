@@ -9,7 +9,7 @@ import ServicesView from './components/ServicesView';
 import BookingView from './components/BookingView';
 import AdminView from './components/AdminView';
 import Sidebar from './components/Sidebar';
-import { DEFAULT_CONFIG } from './constants';
+import { DEFAULT_CONFIG, INITIAL_SERVICES } from './constants';
 
 const App: React.FC = () => {
   const [view, setView] = useState<ViewState>('landing');
@@ -28,9 +28,20 @@ const App: React.FC = () => {
         SupabaseService.getAppointments(),
         SupabaseService.getServices()
       ]);
+      
       if (cloudConfig) setConfig(cloudConfig);
       setAppointments(cloudAppts);
-      setServices(cloudServices);
+      
+      // Si no hay servicios en la nube, sembramos los iniciales automáticamente
+      if (cloudServices.length === 0) {
+        for (const s of INITIAL_SERVICES) {
+          await SupabaseService.saveService(s);
+        }
+        const refreshedServices = await SupabaseService.getServices();
+        setServices(refreshedServices);
+      } else {
+        setServices(cloudServices);
+      }
     } catch (err) {
       console.error("Error cargando datos:", err);
     } finally {
@@ -42,19 +53,18 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
-  // Inyección de variables CSS dinámicas
   useEffect(() => {
     const root = document.documentElement;
     root.style.setProperty('--color-primary', config.themeColors.primary);
     root.style.setProperty('--color-secondary', config.themeColors.secondary);
     root.style.setProperty('--color-accent', config.themeColors.accent);
+    
+    const hexToRgb = (hex: string) => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '226, 232, 240';
+    };
     root.style.setProperty('--color-accent-rgb', hexToRgb(config.themeColors.accent));
   }, [config.themeColors]);
-
-  const hexToRgb = (hex: string) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '226, 232, 240';
-  };
 
   const showNotification = (message: string, type: 'success' | 'error' = 'success') => {
     setNotification({ message, type });
@@ -68,14 +78,15 @@ const App: React.FC = () => {
       showNotification("¡Cita agendada con éxito!", 'success');
       setView('services');
     } catch (err) {
-      showNotification("Error al guardar en la nube", 'error');
+      showNotification("Error al agendar cita", 'error');
     }
   };
 
   const handleUpdateConfig = async (newConfig: ShopConfig) => {
     try {
-      setConfig(newConfig);
       await SupabaseService.updateConfig(newConfig);
+      setConfig(newConfig);
+      showNotification("Configuración actualizada", 'success');
     } catch (err) {
       showNotification("Error actualizando configuración", 'error');
     }
@@ -85,8 +96,9 @@ const App: React.FC = () => {
     try {
       await SupabaseService.saveService(service);
       await fetchData();
-      showNotification("Servicio guardado", 'success');
+      showNotification("Servicio guardado correctamente", 'success');
     } catch (err) {
+      console.error(err);
       showNotification("Error al guardar servicio", 'error');
     }
   };
@@ -114,8 +126,8 @@ const App: React.FC = () => {
   if (isLoading) {
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-12 h-12 text-white animate-spin" />
-        <p className="font-cinzel text-white tracking-widest animate-pulse">Sincronizando con Supabase...</p>
+        <Loader2 className="w-12 h-12 text-[#E2E8F0] animate-spin" />
+        <p className="font-cinzel text-white tracking-widest animate-pulse uppercase text-xs">Sincronizando con Supabase...</p>
       </div>
     );
   }
@@ -218,10 +230,10 @@ const App: React.FC = () => {
 
         {notification && (
           <div className={`fixed bottom-8 right-8 z-50 px-6 py-3 rounded-lg shadow-2xl flex items-center space-x-3 animate-in fade-in slide-in-from-bottom-4 border ${
-            notification.type === 'success' ? 'bg-zinc-800 border-zinc-600' : 'bg-red-900/90 border-red-500'
+            notification.type === 'success' ? 'bg-zinc-900 border-zinc-600 text-white' : 'bg-red-900/90 border-red-500 text-white'
           }`}>
             <Bell className="w-5 h-5 text-theme-accent" />
-            <span className="font-medium">{notification.message}</span>
+            <span className="font-medium text-sm">{notification.message}</span>
           </div>
         )}
       </main>
