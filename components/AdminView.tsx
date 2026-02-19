@@ -341,7 +341,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                     <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">WhatsApp para Notificaciones (con código país)</label>
                     <input
                       type="tel"
-                      placeholder="Ej: 593987654321"
+                      placeholder="573176376375"
                       value={localConfig.contactPhone}
                       onChange={(e) => setLocalConfig({ ...localConfig, contactPhone: e.target.value.replace(/\D/g, '') })}
                       className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white"
