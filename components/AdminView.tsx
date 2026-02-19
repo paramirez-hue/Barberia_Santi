@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { ShopConfig, Appointment, Service } from '../types';
 import { ADMIN_PASSWORD } from '../constants';
-// Added Scissors to imports to fix line 239 error
-import { Settings, Calendar, Clock, Lock, Trash2, Camera, LogOut, LayoutDashboard, ListChecks, Save, Plus, Edit3, X, Palette, Scissors } from 'lucide-react';
+import { Settings, Calendar, Clock, Lock, Trash2, Camera, LogOut, LayoutDashboard, ListChecks, Save, Plus, Edit3, X, Palette, Scissors, Phone as PhoneIcon, MessageSquare } from 'lucide-react';
 import { isToday } from 'date-fns';
 import { ICON_MAP } from './ServicesView';
 
@@ -28,7 +27,6 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
   const [localConfig, setLocalConfig] = useState<ShopConfig>(config);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Estado para gestión de servicios
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [serviceFormData, setServiceFormData] = useState({
@@ -173,7 +171,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
           </div>
           <div>
             <h2 className="text-3xl font-cinzel font-bold text-white uppercase tracking-tighter">{localConfig.name}</h2>
-            <span className="text-[10px] bg-green-900/30 text-green-400 border border-green-900/50 px-2 py-0.5 rounded font-bold uppercase">Online • Supabase</span>
+            <span className="text-[10px] bg-green-900/30 text-green-400 border border-green-900/50 px-2 py-0.5 rounded font-bold uppercase">Sistema Activo</span>
           </div>
         </div>
         <button onClick={() => setIsAuthenticated(false)} className="px-6 py-2.5 bg-zinc-800 border border-zinc-700 text-gray-400 rounded-xl hover:bg-zinc-700 transition-colors flex items-center space-x-2 text-xs font-bold uppercase tracking-widest">
@@ -183,7 +181,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-theme-secondary p-1 rounded-2xl border border-white/5">
+      <div className="flex flex-wrap gap-2 bg-theme-secondary/50 p-1 rounded-2xl border border-white/5 backdrop-blur-md">
         {[
           { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
           { id: 'appointments', label: 'Agenda', icon: ListChecks },
@@ -267,7 +265,6 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
         {activeTab === 'settings' && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Paleta de Colores */}
               <div className="bg-theme-secondary border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
                 <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
                   <Palette className="w-4 h-4 text-theme-accent" />
@@ -276,7 +273,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Tono Base (Fondo)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Fondo</label>
                     <div className="flex items-center space-x-3">
                       <input 
                         type="color" 
@@ -285,14 +282,14 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                           ...localConfig, 
                           themeColors: { ...localConfig.themeColors, primary: e.target.value }
                         })}
-                        className="w-10 h-10 rounded cursor-pointer bg-transparent"
+                        className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-xs font-mono opacity-50 uppercase">{localConfig.themeColors.primary}</span>
+                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.primary}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Superficie (Tarjetas)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Tarjetas</label>
                     <div className="flex items-center space-x-3">
                       <input 
                         type="color" 
@@ -301,14 +298,14 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                           ...localConfig, 
                           themeColors: { ...localConfig.themeColors, secondary: e.target.value }
                         })}
-                        className="w-10 h-10 rounded cursor-pointer bg-transparent"
+                        className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-xs font-mono opacity-50 uppercase">{localConfig.themeColors.secondary}</span>
+                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.secondary}</span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Acento (Detalle)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-500">Acento</label>
                     <div className="flex items-center space-x-3">
                       <input 
                         type="color" 
@@ -317,19 +314,14 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                           ...localConfig, 
                           themeColors: { ...localConfig.themeColors, accent: e.target.value }
                         })}
-                        className="w-10 h-10 rounded cursor-pointer bg-transparent"
+                        className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-xs font-mono opacity-50 uppercase">{localConfig.themeColors.accent}</span>
+                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.accent}</span>
                     </div>
                   </div>
                 </div>
-
-                <div className="p-4 bg-zinc-800/50 rounded-2xl border border-white/5">
-                  <p className="text-xs text-gray-500 italic">Previsualización: El cambio se aplicará a toda la App al guardar.</p>
-                </div>
               </div>
 
-              {/* Ajustes Identidad */}
               <div className="bg-theme-secondary border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
                 <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
                   <Settings className="w-4 h-4 text-theme-accent" />
@@ -341,23 +333,11 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                     type="text"
                     value={localConfig.name}
                     onChange={(e) => setLocalConfig({ ...localConfig, name: e.target.value })}
-                    className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white"
+                    className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white font-cinzel"
                   />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Logo</label>
-                  <div className="flex items-center space-x-4 p-4 bg-zinc-800/50 rounded-xl border border-white/5">
-                     {localConfig.logo ? (
-                       <img src={localConfig.logo} className="w-12 h-12 rounded-lg object-cover border border-theme-accent" alt="Preview" />
-                     ) : (
-                       <div className="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center"><Camera className="w-5 h-5" /></div>
-                     )}
-                     <input type="file" accept="image/*" onChange={handleLogoUpload} className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-theme-accent file:text-black cursor-pointer" />
-                  </div>
                 </div>
               </div>
 
-              {/* Horarios */}
               <div className="bg-theme-secondary border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
                 <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
                   <Clock className="w-4 h-4 text-theme-accent" />
@@ -375,11 +355,10 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                 </div>
               </div>
 
-              {/* Días */}
               <div className="bg-theme-secondary border border-white/5 p-8 rounded-3xl shadow-xl space-y-6">
                 <h3 className="font-cinzel text-lg text-white font-bold flex items-center space-x-2 border-b border-white/5 pb-4 uppercase tracking-widest">
                   <Calendar className="w-4 h-4 text-theme-accent" />
-                  <span>Días</span>
+                  <span>Días de Trabajo</span>
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {['D','L','M','X','J','V','S'].map((label, id) => {
@@ -410,18 +389,18 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
 
         {activeTab === 'appointments' && (
           <div className="bg-theme-secondary border border-white/5 rounded-3xl overflow-hidden shadow-2xl overflow-x-auto">
-            <table className="w-full text-left min-w-[600px]">
+            <table className="w-full text-left min-w-[700px]">
               <thead className="bg-zinc-800/50 text-[10px] uppercase tracking-widest text-gray-500 font-bold border-b border-white/5">
                 <tr>
                   <th className="px-6 py-4">Fecha/Hora</th>
                   <th className="px-6 py-4">Cliente</th>
                   <th className="px-6 py-4">Servicio</th>
-                  <th className="px-6 py-4 text-right">Acciones</th>
+                  <th className="px-6 py-4 text-right">Contacto / Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {appointments.map((appt) => (
-                  <tr key={appt.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={appt.id} className="hover:bg-white/[0.02] transition-colors group">
                     <td className="px-6 py-4">
                       <span className="font-bold text-white block">{appt.date}</span>
                       <span className="text-theme-accent text-xs font-bold">{appt.time}</span>
@@ -433,10 +412,19 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                     <td className="px-6 py-4">
                       <span className="px-2 py-1 bg-zinc-800 rounded text-[10px] font-bold text-gray-400 border border-white/5 uppercase tracking-tighter">{appt.serviceName}</span>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <button onClick={() => confirm("Eliminar?") && onDeleteAppointment(appt.id)} className="p-2 text-gray-700 hover:text-red-400">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-end space-x-2">
+                        <a href={`tel:${appt.phoneNumber}`} className="p-2 text-gray-500 hover:text-white bg-white/5 rounded-lg border border-transparent hover:border-white/10 transition-all">
+                          <PhoneIcon className="w-4 h-4" />
+                        </a>
+                        <a href={`https://wa.me/${appt.phoneNumber.replace(/\D/g, '')}`} target="_blank" className="p-2 text-gray-500 hover:text-green-500 bg-white/5 rounded-lg border border-transparent hover:border-green-500/20 transition-all">
+                          <MessageSquare className="w-4 h-4" />
+                        </a>
+                        <div className="w-px h-6 bg-white/5 mx-2" />
+                        <button onClick={() => confirm("Eliminar cita?") && onDeleteAppointment(appt.id)} className="p-2 text-gray-700 hover:text-red-400">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
-// Added CheckCircle2 to imports from lucide-react
-import { Search, Calendar, Clock, Loader2, Scissors, History, CheckCircle2 } from 'lucide-react';
+import { Search, Calendar, Clock, Loader2, Scissors, History, CheckCircle2, MessageSquare } from 'lucide-react';
 import { Appointment } from '../types';
 import { SupabaseService } from '../services/supabase';
 import { parseISO, isAfter } from 'date-fns';
@@ -34,6 +33,12 @@ const MyAppointmentsView: React.FC = () => {
     }
   };
 
+  const openWhatsApp = (appt: Appointment) => {
+    const message = `Hola! Soy ${appt.customerName}. Consulto por mi cita de ${appt.serviceName} el día ${appt.date} a las ${appt.time}.`;
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/593987654321?text=${encoded}`, '_blank'); // Reemplazar con número real de la barbería
+  };
+
   return (
     <div className="p-6 max-w-2xl mx-auto space-y-8 animate-in slide-in-from-bottom duration-700">
       <div className="text-center space-y-3">
@@ -44,8 +49,7 @@ const MyAppointmentsView: React.FC = () => {
         <p className="text-gray-500 text-sm tracking-wide">Gestiona y consulta el estado de tus citas</p>
       </div>
 
-      <div className="bg-theme-secondary border border-white/5 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
-        {/* Decoración de fondo */}
+      <div className="bg-theme-secondary/50 backdrop-blur-xl border border-white/5 p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-theme-accent/5 blur-3xl rounded-full -mr-16 -mt-16"></div>
         
         <form onSubmit={handleSearch} className="space-y-6 relative z-10">
@@ -71,7 +75,7 @@ const MyAppointmentsView: React.FC = () => {
           <button 
             type="submit" 
             disabled={loading || phone.length < 10}
-            className="w-full gold-gradient py-5 rounded-2xl text-black font-black uppercase tracking-[0.2em] disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-95 shadow-xl"
+            className="w-full gold-gradient py-5 rounded-2xl text-black font-black uppercase tracking-[0.2em] disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.01] active:scale-95 shadow-xl"
           >
             {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : "Consultar Agenda"}
           </button>
@@ -91,7 +95,7 @@ const MyAppointmentsView: React.FC = () => {
               const isUpcoming = isAfter(apptDate, new Date());
               
               return (
-                <div key={appt.id} className="bg-black/60 border border-white/5 p-6 rounded-2xl flex justify-between items-center group hover:border-theme-accent/30 transition-all">
+                <div key={appt.id} className="bg-black/40 border border-white/5 p-6 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group hover:border-theme-accent/30 transition-all">
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
                       <Scissors className="w-4 h-4 text-theme-accent" />
@@ -112,9 +116,13 @@ const MyAppointmentsView: React.FC = () => {
                     </div>
                   </div>
                   
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
-                    <CheckCircle2 className="w-5 h-5 text-theme-accent/40" />
-                  </div>
+                  <button 
+                    onClick={() => openWhatsApp(appt)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-theme-accent/5 hover:bg-theme-accent/10 border border-theme-accent/10 rounded-xl text-theme-accent text-[10px] font-bold uppercase tracking-widest transition-all w-full md:w-auto justify-center"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>WhatsApp</span>
+                  </button>
                 </div>
               );
             })}
@@ -123,7 +131,7 @@ const MyAppointmentsView: React.FC = () => {
       </div>
       
       <p className="text-center text-gray-700 text-[10px] uppercase tracking-widest font-medium">
-        Si necesitas cancelar o cambiar tu cita, contáctanos por WhatsApp.
+        Usa el botón de WhatsApp para cambios o cancelaciones.
       </p>
     </div>
   );
