@@ -284,7 +284,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                         })}
                         className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.primary}</span>
+                      <span className="text-[10px] font-mono uppercase font-bold text-gray-500">{localConfig.themeColors.primary}</span>
                     </div>
                   </div>
 
@@ -300,7 +300,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                         })}
                         className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.secondary}</span>
+                      <span className="text-[10px] font-mono uppercase font-bold text-gray-500">{localConfig.themeColors.secondary}</span>
                     </div>
                   </div>
 
@@ -316,7 +316,7 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                         })}
                         className="w-10 h-10 rounded cursor-pointer bg-transparent border-0"
                       />
-                      <span className="text-[10px] font-mono opacity-50 uppercase">{localConfig.themeColors.accent}</span>
+                      <span className="text-[10px] font-mono uppercase font-bold text-gray-500">{localConfig.themeColors.accent}</span>
                     </div>
                   </div>
                 </div>
@@ -338,15 +338,15 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">WhatsApp para Notificaciones (con código país)</label>
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Teléfono de Contacto (WhatsApp)</label>
                     <input
                       type="tel"
-                      placeholder="573176376375"
+                      placeholder="Ej: 593987654321"
                       value={localConfig.contactPhone}
                       onChange={(e) => setLocalConfig({ ...localConfig, contactPhone: e.target.value.replace(/\D/g, '') })}
                       className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white"
                     />
-                    <p className="text-[10px] text-gray-600 italic">Aquí recibirás los detalles de cada nueva reserva.</p>
+                    <p className="text-[10px] text-gray-600 italic">Este número se mostrará a los clientes para que puedan contactarte manualmente.</p>
                   </div>
                 </div>
               </div>

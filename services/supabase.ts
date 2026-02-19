@@ -18,7 +18,7 @@ export const SupabaseService = {
       return {
         name: data.name,
         logo: data.logo,
-        contactPhone: data.contact_phone || "573176376375",
+        contactPhone: data.contact_phone || "593987654321",
         openingTime: data.opening_time,
         closingTime: data.closing_time,
         workingDays: data.working_days,

@@ -77,20 +77,10 @@ const App: React.FC = () => {
       await fetchData(); 
       showNotification("¡Cita agendada con éxito!", 'success');
       
-      // Notificación automática al barbero
-      const barberPhone = config.contactPhone || "573176376375";
-      const whatsappMsg = `*NUEVA CITA AGENDADA* 💈\n\n` +
-                          `👤 *Cliente:* ${newAppointment.customerName}\n` +
-                          `✂️ *Servicio:* ${newAppointment.serviceName}\n` +
-                          `📅 *Fecha:* ${newAppointment.date}\n` +
-                          `⏰ *Hora:* ${newAppointment.time}\n` +
-                          `📞 *Celular:* ${newAppointment.phoneNumber}\n\n` +
-                          `_Enviado desde el sistema de reservas._`;
+      // Se eliminó la notificación automática de WhatsApp por ser poco funcional
+      // El usuario ahora simplemente es redirigido a la vista de sus citas.
       
-      const encodedMsg = encodeURIComponent(whatsappMsg);
-      window.open(`https://wa.me/${barberPhone.replace(/\D/g, '')}?text=${encodedMsg}`, '_blank');
-
-      setView('my-appointments'); // Llevar al usuario a ver sus citas
+      setView('my-appointments'); 
     } catch (err) {
       showNotification("Error al agendar cita", 'error');
     }

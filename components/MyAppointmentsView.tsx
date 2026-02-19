@@ -40,7 +40,7 @@ const MyAppointmentsView: React.FC = () => {
   };
 
   const openWhatsApp = (appt: Appointment) => {
-    const barberPhone = config?.contactPhone || "573176376375";
+    const barberPhone = config?.contactPhone || "593987654321";
     const message = `Hola! Soy ${appt.customerName}. Consulto por mi cita de ${appt.serviceName} el día ${appt.date} a las ${appt.time}.`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/${barberPhone.replace(/\D/g, '')}?text=${encoded}`, '_blank');
