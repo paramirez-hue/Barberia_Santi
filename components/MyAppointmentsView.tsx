@@ -36,7 +36,7 @@ const MyAppointmentsView: React.FC = () => {
   const openWhatsApp = (appt: Appointment) => {
     const message = `Hola! Soy ${appt.customerName}. Consulto por mi cita de ${appt.serviceName} el día ${appt.date} a las ${appt.time}.`;
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/593987654321?text=${encoded}`, '_blank'); // Reemplazar con número real de la barbería
+    window.open(`https://wa.me/573007491977?text=${encoded}`, '_blank'); // Reemplazar con número real de la barbería
   };
 
   return (
