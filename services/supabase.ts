@@ -40,7 +40,6 @@ export const SupabaseService = {
         logo: config.logo,
         opening_time: config.openingTime,
         closing_time: config.closingTime,
-        // Fix: Use config.workingDays instead of config.working_days to match ShopConfig type
         working_days: config.workingDays,
         theme_colors: config.themeColors
       })
@@ -70,23 +69,43 @@ export const SupabaseService = {
   },
 
   async saveService(service: Service) {
-    // Usamos upsert que requiere una Primary Key definida en el SQL para funcionar como UPDATE
-    const { error } = await supabase.from('services').upsert({
+    // Validamos que el precio sea un número válido
+    const validPrice = isNaN(Number(service.price)) ? 0 : Number(service.price);
+    const validDuration = isNaN(Number(service.durationMinutes)) ? 30 : Number(service.durationMinutes);
+
+    const payload = {
       id: service.id,
       name: service.name,
-      price: service.price,
-      description: service.description,
-      duration_minutes: service.durationMinutes,
-      category: service.category,
-      icon_name: service.iconName
-    }, { onConflict: 'id' });
+      price: validPrice,
+      description: service.description || '',
+      duration_minutes: validDuration,
+      category: service.category || 'General',
+      icon_name: service.iconName || 'Scissors'
+    };
+
+    console.log('Intentando guardar servicio:', payload);
+
+    const { error } = await supabase
+      .from('services')
+      .upsert(payload, { onConflict: 'id' });
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error detallado de Supabase al guardar servicio:', error);
+      throw error;
+    }
   },
 
   async deleteService(id: string) {
-    const { error } = await supabase.from('services').delete().eq('id', id);
-    if (error) throw error;
+    console.log('Intentando eliminar servicio con ID:', id);
+    const { error } = await supabase
+      .from('services')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error detallado de Supabase al eliminar servicio:', error);
+      throw error;
+    }
   },
 
   async getAppointments(): Promise<Appointment[]> {
