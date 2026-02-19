@@ -1,5 +1,10 @@
 
--- 1. TABLA DE CONFIGURACIÓN
+-- 1. DESACTIVAR RLS TEMPORALMENTE PARA LIMPIEZA
+alter table if exists config disable row level security;
+alter table if exists services disable row level security;
+alter table if exists appointments disable row level security;
+
+-- 2. TABLA DE CONFIGURACIÓN (Asegurar existencia e ID)
 create table if not exists config (
   id int8 primary key default 1,
   name text not null default 'NEILS BARBER',
@@ -14,8 +19,7 @@ insert into config (id, name, opening_time, closing_time, working_days, theme_co
 values (1, 'NEILS BARBER', '08:00', '20:00', '{1,2,3,4,5,6}', '{"primary": "#000000", "secondary": "#18181b", "accent": "#E2E8F0"}')
 on conflict (id) do nothing;
 
--- 2. TABLA DE SERVICIOS
--- Aseguramos que el ID sea TEXT para soportar IDs manuales y generados.
+-- 3. TABLA DE SERVICIOS (Crucial: ID como TEXT para evitar errores de tipo)
 create table if not exists services (
   id text primary key,
   name text not null,
@@ -27,7 +31,7 @@ create table if not exists services (
   created_at timestamptz default now()
 );
 
--- 3. TABLA DE CITAS
+-- 4. TABLA DE CITAS
 create table if not exists appointments (
   id uuid default gen_random_uuid() primary key,
   service_id text references services(id) on delete set null,
@@ -39,23 +43,22 @@ create table if not exists appointments (
   created_at timestamptz default now()
 );
 
--- 4. POLÍTICAS RLS (Limpias y potentes)
+-- 5. RE-ACTIVAR RLS Y DEFINIR POLÍTICAS ABIERTAS
 alter table config enable row level security;
 alter table services enable row level security;
 alter table appointments enable row level security;
 
--- Borramos políticas anteriores para evitar conflictos si ya existían
-drop policy if exists "Pública select config" on config;
-drop policy if exists "Pública update config" on config;
-drop policy if exists "Pública select servicios" on services;
-drop policy if exists "Pública insert servicios" on services;
-drop policy if exists "Pública update servicios" on services;
-drop policy if exists "Pública delete servicios" on services;
-drop policy if exists "Pública select citas" on appointments;
-drop policy if exists "Pública insert citas" on appointments;
-drop policy if exists "Pública delete citas" on appointments;
+-- Limpieza total de políticas previas
+do $$ 
+declare
+    pol record;
+begin
+    for pol in (select policyname, tablename from pg_policies where schemaname = 'public') loop
+        execute format('drop policy if exists %I on %I', pol.policyname, pol.tablename);
+    end loop;
+end $$;
 
--- Re-creación de políticas
-create policy "Permitir todo config" on config for all using (true) with check (true);
-create policy "Permitir todo servicios" on services for all using (true) with check (true);
-create policy "Permitir todo citas" on appointments for all using (true) with check (true);
+-- Nuevas políticas universales (Todo permitido para pruebas)
+create policy "permit_all_config" on config for all using (true) with check (true);
+create policy "permit_all_services" on services for all using (true) with check (true);
+create policy "permit_all_appointments" on appointments for all using (true) with check (true);

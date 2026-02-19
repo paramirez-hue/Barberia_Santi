@@ -64,17 +64,18 @@ export const SupabaseService = {
         iconName: s.icon_name || 'Scissors'
       }));
     } catch (error) {
+      console.error("Error cargando servicios:", error);
       return [];
     }
   },
 
   async saveService(service: Service) {
-    // Validamos que el precio sea un número válido
     const validPrice = isNaN(Number(service.price)) ? 0 : Number(service.price);
     const validDuration = isNaN(Number(service.durationMinutes)) ? 30 : Number(service.durationMinutes);
 
+    // Aseguramos que el ID sea siempre string
     const payload = {
-      id: service.id,
+      id: String(service.id),
       name: service.name,
       price: validPrice,
       description: service.description || '',
@@ -83,27 +84,24 @@ export const SupabaseService = {
       icon_name: service.iconName || 'Scissors'
     };
 
-    console.log('Intentando guardar servicio:', payload);
-
     const { error } = await supabase
       .from('services')
       .upsert(payload, { onConflict: 'id' });
     
     if (error) {
-      console.error('Error detallado de Supabase al guardar servicio:', error);
+      console.error('Error detallado de Supabase (Upsert):', error);
       throw error;
     }
   },
 
   async deleteService(id: string) {
-    console.log('Intentando eliminar servicio con ID:', id);
     const { error } = await supabase
       .from('services')
       .delete()
-      .eq('id', id);
+      .eq('id', String(id));
     
     if (error) {
-      console.error('Error detallado de Supabase al eliminar servicio:', error);
+      console.error('Error detallado de Supabase (Delete):', error);
       throw error;
     }
   },
