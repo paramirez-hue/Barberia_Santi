@@ -328,13 +328,26 @@ const AdminView: React.FC<AdminViewProps> = ({ config, setConfig, appointments, 
                   <span>Identidad</span>
                 </h3>
                 <div className="space-y-4">
-                  <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Nombre del Negocio</label>
-                  <input
-                    type="text"
-                    value={localConfig.name}
-                    onChange={(e) => setLocalConfig({ ...localConfig, name: e.target.value })}
-                    className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white font-cinzel"
-                  />
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">Nombre del Negocio</label>
+                    <input
+                      type="text"
+                      value={localConfig.name}
+                      onChange={(e) => setLocalConfig({ ...localConfig, name: e.target.value })}
+                      className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white font-cinzel"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase font-bold tracking-widest text-gray-600">WhatsApp para Notificaciones (con código país)</label>
+                    <input
+                      type="tel"
+                      placeholder="Ej: 593987654321"
+                      value={localConfig.contactPhone}
+                      onChange={(e) => setLocalConfig({ ...localConfig, contactPhone: e.target.value.replace(/\D/g, '') })}
+                      className="w-full bg-zinc-800 border border-white/5 rounded-xl p-4 outline-none focus:border-theme-accent transition-all text-white"
+                    />
+                    <p className="text-[10px] text-gray-600 italic">Aquí recibirás los detalles de cada nueva reserva.</p>
+                  </div>
                 </div>
               </div>
 

@@ -12,6 +12,7 @@ export const INITIAL_SERVICES: Service[] = [
 export const DEFAULT_CONFIG: ShopConfig = {
   name: "NEILS BARBER",
   logo: null,
+  contactPhone: "593987654321", // Número por defecto
   openingTime: "08:00",
   closingTime: "20:00",
   workingDays: [1, 2, 3, 4, 5, 6], // Mon-Sat

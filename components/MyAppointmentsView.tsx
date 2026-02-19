@@ -1,15 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Clock, Loader2, Scissors, History, CheckCircle2, MessageSquare } from 'lucide-react';
-import { Appointment } from '../types';
+import { Appointment, ShopConfig } from '../types';
 import { SupabaseService } from '../services/supabase';
-import { parseISO, isAfter } from 'date-fns';
+// Removed parseISO as it is causing import errors; using native Date instead
+import { isAfter } from 'date-fns';
 
 const MyAppointmentsView: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [appointments, setAppointments] = useState<Appointment[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [config, setConfig] = useState<ShopConfig | null>(null);
+
+  useEffect(() => {
+    SupabaseService.getConfig().then(setConfig);
+  }, []);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +40,10 @@ const MyAppointmentsView: React.FC = () => {
   };
 
   const openWhatsApp = (appt: Appointment) => {
+    const barberPhone = config?.contactPhone || "593987654321";
     const message = `Hola! Soy ${appt.customerName}. Consulto por mi cita de ${appt.serviceName} el día ${appt.date} a las ${appt.time}.`;
     const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/573007491977?text=${encoded}`, '_blank'); // Reemplazar con número real de la barbería
+    window.open(`https://wa.me/${barberPhone.replace(/\D/g, '')}?text=${encoded}`, '_blank');
   };
 
   return (
@@ -91,7 +98,10 @@ const MyAppointmentsView: React.FC = () => {
           <div className="mt-12 space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
             <h4 className="text-[10px] uppercase font-bold tracking-widest text-gray-600 border-b border-white/5 pb-2">Resultados Encontrados</h4>
             {appointments.map((appt) => {
-              const apptDate = parseISO(`${appt.date}T${appt.time}`);
+              // Replaced parseISO with native Date construction for reliability and to fix the import error
+              const [y, m, d] = appt.date.split('-').map(Number);
+              const [hh, mm] = appt.time.split(':').map(Number);
+              const apptDate = new Date(y, m - 1, d, hh, mm);
               const isUpcoming = isAfter(apptDate, new Date());
               
               return (

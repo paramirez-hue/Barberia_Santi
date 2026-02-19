@@ -23,6 +23,7 @@ export interface Appointment {
 export interface ShopConfig {
   name: string;
   logo: string | null;
+  contactPhone: string; // Nuevo: Teléfono de contacto para notificaciones
   openingTime: string; // HH:mm
   closingTime: string; // HH:mm
   workingDays: number[]; // 0-6 (Sun-Sat)

@@ -76,7 +76,21 @@ const App: React.FC = () => {
       await SupabaseService.saveAppointment(newAppointment);
       await fetchData(); 
       showNotification("¡Cita agendada con éxito!", 'success');
-      setView('services');
+      
+      // Notificación automática al barbero
+      const barberPhone = config.contactPhone || "593987654321";
+      const whatsappMsg = `*NUEVA CITA AGENDADA* 💈\n\n` +
+                          `👤 *Cliente:* ${newAppointment.customerName}\n` +
+                          `✂️ *Servicio:* ${newAppointment.serviceName}\n` +
+                          `📅 *Fecha:* ${newAppointment.date}\n` +
+                          `⏰ *Hora:* ${newAppointment.time}\n` +
+                          `📞 *Celular:* ${newAppointment.phoneNumber}\n\n` +
+                          `_Enviado desde el sistema de reservas._`;
+      
+      const encodedMsg = encodeURIComponent(whatsappMsg);
+      window.open(`https://wa.me/${barberPhone.replace(/\D/g, '')}?text=${encodedMsg}`, '_blank');
+
+      setView('my-appointments'); // Llevar al usuario a ver sus citas
     } catch (err) {
       showNotification("Error al agendar cita", 'error');
     }

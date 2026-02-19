@@ -18,6 +18,7 @@ export const SupabaseService = {
       return {
         name: data.name,
         logo: data.logo,
+        contactPhone: data.contact_phone || "593987654321",
         openingTime: data.opening_time,
         closingTime: data.closing_time,
         workingDays: data.working_days,
@@ -38,6 +39,7 @@ export const SupabaseService = {
       .update({
         name: config.name,
         logo: config.logo,
+        contact_phone: config.contactPhone,
         opening_time: config.openingTime,
         closing_time: config.closingTime,
         working_days: config.workingDays,
@@ -69,6 +71,7 @@ export const SupabaseService = {
   },
 
   async saveService(service: Service) {
+    // Corrected service.icon_name to service.iconName to match Service type definition
     const payload = {
       id: String(service.id),
       name: service.name,
