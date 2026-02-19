@@ -2,27 +2,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { ShopConfig, Appointment, Service } from '../types';
 
-// Safely access environment variables with fallbacks to avoid "Cannot read properties of undefined" errors
-const getEnvVar = (name: string): string => {
-  try {
-    // Try import.meta.env (Vite standard)
-    if (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env[name]) {
-      return (import.meta as any).env[name];
-    }
-    // Try process.env (Node/CommonJS/Shim standard)
-    if (typeof process !== 'undefined' && process.env && process.env[name]) {
-      return process.env[name] as string;
-    }
-  } catch (e) {
-    console.warn(`Error accessing environment variable ${name}:`, e);
-  }
-  return '';
-};
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
 
-const supabaseUrl = getEnvVar('VITE_SUPABASE_URL');
-const supabaseAnonKey = getEnvVar('VITE_SUPABASE_ANON_KEY');
-
-// Initialize with a fallback URL if variables are missing to prevent total failure
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co', 
   supabaseAnonKey || 'placeholder'
@@ -38,13 +20,13 @@ export const SupabaseService = {
         logo: data.logo,
         openingTime: data.opening_time,
         closingTime: data.closing_time,
-        working_days: data.working_days,
+        workingDays: data.working_days,
         themeColors: data.theme_colors || {
           primary: "#000000",
           secondary: "#18181b",
           accent: "#E2E8F0"
         }
-      } as any;
+      };
     } catch (error) {
       return null;
     }

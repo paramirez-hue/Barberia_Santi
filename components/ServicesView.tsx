@@ -24,8 +24,8 @@ const ServicesView: React.FC<ServicesViewProps> = ({ services, onSelectService }
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8 animate-in slide-in-from-bottom duration-500">
       <div className="text-center space-y-2">
-        <h2 className="font-cinzel text-3xl gold-text font-bold uppercase tracking-widest">Servicios</h2>
-        <p className="text-gray-500">Selecciona el tratamiento </p>
+        <h2 className="font-cinzel text-3xl gold-text font-bold uppercase tracking-widest">Servicios Premium</h2>
+        <p className="text-gray-500">Selecciona el tratamiento con acabado de precisión</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
