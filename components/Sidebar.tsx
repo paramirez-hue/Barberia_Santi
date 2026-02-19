@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, Scissors, Calendar, Settings, LogOut, Home, UserCheck } from 'lucide-react';
+import { X, Scissors, Calendar, Settings, LogOut, Home, UserCheck, CheckCircle2 } from 'lucide-react';
 import { ViewState, ShopConfig } from '../types';
 
 interface SidebarProps {
@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, currentView, setVi
       )}
 
       {/* Sidebar Content */}
-      <aside className={`fixed top-0 left-0 h-full w-72 bg-[#0a0a0a] border-r border-[#E2E8F0]/20 z-50 transition-transform duration-300 transform ${
+      <aside className={`fixed top-0 left-0 h-full w-72 bg-[#0a0a0a] border-r border-white/10 z-50 transition-transform duration-300 transform ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <div className="p-6 flex flex-col h-full">
@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, currentView, setVi
                   <Scissors className="w-5 h-5 text-black" />
                 </div>
               )}
-              <span className="font-cinzel text-lg gold-text font-bold uppercase tracking-tight">Menu</span>
+              <span className="font-cinzel text-lg gold-text font-bold uppercase tracking-tight">Menú</span>
             </div>
             <button onClick={() => setIsOpen(false)} className="p-1 hover:bg-white/10 rounded">
               <X className="w-6 h-6 gold-text" />
@@ -81,9 +81,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen, currentView, setVi
             ))}
           </nav>
 
-          <div className="pt-6 border-t border-white/10 mt-auto">
-            <p className="text-xs text-center text-gray-600 font-cinzel tracking-widest">
-              &copy; 2024 NEILS BARBER<br/>ALUMINUM PRECISION
+          <div className="pt-6 border-t border-white/10 mt-auto space-y-2">
+            <div className="flex items-center justify-center space-x-2 text-[10px] text-green-500 font-bold uppercase tracking-widest opacity-60">
+              <CheckCircle2 className="w-3 h-3" />
+              <span>v1.2.0 LIVE</span>
+            </div>
+            <p className="text-[10px] text-center text-gray-600 font-cinzel tracking-widest">
+              &copy; 2024 NEILS BARBER<br/>PRECISIÓN Y ESTILO
             </p>
           </div>
         </div>
