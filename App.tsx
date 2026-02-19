@@ -78,7 +78,7 @@ const App: React.FC = () => {
       showNotification("¡Cita agendada con éxito!", 'success');
       
       // Notificación automática al barbero
-      const barberPhone = config.contactPhone || "593987654321";
+      const barberPhone = config.contactPhone || "573176376375";
       const whatsappMsg = `*NUEVA CITA AGENDADA* 💈\n\n` +
                           `👤 *Cliente:* ${newAppointment.customerName}\n` +
                           `✂️ *Servicio:* ${newAppointment.serviceName}\n` +
