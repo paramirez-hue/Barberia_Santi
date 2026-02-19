@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, Calendar, Clock, Loader2, Scissors, History, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Search, Calendar, Clock, Loader2, Scissors, History, CheckCircle2 } from 'lucide-react';
 import { Appointment, ShopConfig } from '../types';
 import { SupabaseService } from '../services/supabase';
 // Removed parseISO as it is causing import errors; using native Date instead
@@ -37,13 +37,6 @@ const MyAppointmentsView: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const openWhatsApp = (appt: Appointment) => {
-    const barberPhone = config?.contactPhone || "593987654321";
-    const message = `Hola! Soy ${appt.customerName}. Consulto por mi cita de ${appt.serviceName} el día ${appt.date} a las ${appt.time}.`;
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${barberPhone.replace(/\D/g, '')}?text=${encoded}`, '_blank');
   };
 
   return (
@@ -125,14 +118,6 @@ const MyAppointmentsView: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  <button 
-                    onClick={() => openWhatsApp(appt)}
-                    className="flex items-center space-x-2 px-4 py-2 bg-theme-accent/5 hover:bg-theme-accent/10 border border-theme-accent/10 rounded-xl text-theme-accent text-[10px] font-bold uppercase tracking-widest transition-all w-full md:w-auto justify-center"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>WhatsApp</span>
-                  </button>
                 </div>
               );
             })}
@@ -141,7 +126,7 @@ const MyAppointmentsView: React.FC = () => {
       </div>
       
       <p className="text-center text-gray-700 text-[10px] uppercase tracking-widest font-medium">
-        Usa el botón de WhatsApp para cambios o cancelaciones.
+        Contacta a la barbería directamente para cambios o cancelaciones.
       </p>
     </div>
   );
